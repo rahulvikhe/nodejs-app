@@ -5,14 +5,21 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const password = encodeURIComponent(process.env.MONGO_PASSWORD.trim());
-const connectionString = `mongodb+srv://rahulvikhe:${password}@dev-cluster.idtyynl.mongodb.net/?retryWrites=true&w=majority&appName=dev-cluster`; // clustore url
+const connectionString = `mongodb+srv://rahulvikhe:${password}@dev-cluster.idtyynl.mongodb.net/?retryWrites=true&w=majority&appName=dev-cluster`; // cluster URL
 const client = new MongoClient(connectionString);
-let conn;
-try {
-  conn = await client.connect();
-  console.log("connection successful")
-} catch(e) {
-  console.error(e);
+
+// Async function to establish MongoDB connection
+async function connectToDatabase() {
+  try {
+    await client.connect();
+    console.log("Connection to MongoDB Atlas successful");
+    const db = client.db("integration_ninjas");
+    return db;
+  } catch (error) {
+    console.error("Error connecting to MongoDB Atlas:", error);
+    throw error; // Rethrow the error for handling at a higher level
+  }
 }
-let db = conn.db("integration_ninjas");
-export default db;
+
+// Export the database connection function
+export default connectToDatabase();
